@@ -1,0 +1,71 @@
+P. 12
+
+1. How do you know if a code base is an application? A release?
+The presence of a relx.config file or a relx tuple in rebar.config.
+
+2. What differentiates an application from a library application?
+A library application is neither started nor stopped.
+
+3. What can be said of processes under a one_for_all scheme for supervision?
+The processes under a one_for_all scheme entirely depend on each other.
+
+4. Why would someone use a gen_fsm behaviour over a gen_server?
+When reason someone would use a gen_fsm over a gen_server is if the functionalty
+happens in a particular sequence. If a sequence is not required, then a
+gen_server implementation could help parallelize work.
+
+1. Is this application meant to be used as a library? A standalone system?
+This application is not meant to be used as a library- the app file defines
+`mod`.
+
+It seems to be intended to be standalone b/c it has a `relx` tuple in
+`rebar.config`, therefore it's a release and releases are standalone (I think).
+
+2. What does it do?
+Starts a supervisor which supervisors a number of gen_servers as listed in the
+application file. Each gen_server generates a random number which seems to be
+used to determine the frequency at which each gen_server will log a random
+String- ostensibly to simulate a person speaking.
+
+3. Does it have any dependencies? What are they?
+Yes, it has dependencies. The dependencies are gproc and recon.
+
+4. The app’s README mentions being non-deterministic. Can you prove if this is
+true? How?
+The general logic for the app is based on the number generated in
+council_member:init/1 via rand:uniform(10). So, the README should be correct
+in that assertion.
+
+5. Can you express the dependency chain of applications in there? Generate a
+diagram of them?
+Council depends on crypto and gproc. Council, as noted in the generated diagram
+by being represented as an oval is an application, gproc and crypto (rectangles)
+as library applications. Recon is a dependency as well and is also a library
+application.
+
+6. Can you add more processes to the main application than those described in
+the README?
+Yes, more processes can be added by adding a String to the list of process names
+in the application file.
+
+P. 18
+1. Are Erlang supervision trees started depth-first? breadth-first?
+Synchronously or asynchronously?
+Erlang supervision trees are started synchronously depth-first.
+
+2. What are the three application strategies? What do they do?
+  • permanent: if the app terminates, the entire system is taken down, excluding
+               manual termination of the app with application:stop/1.
+  • transient: if the app terminates for reason normal, that’s ok. Any other
+               reason for termination shuts down the entire system.
+  • temporary: the application is allowed to stop for any reason. It will be
+               reported, but nothing bad will happen.
+
+3. What are the main differences between the directory structure of an app and a
+release?
+
+4. When should you use a release?
+
+5. Give two examples of the type of state that can go in a process’ init
+function, and two examples of the type of state that shouldn’t go in a process’
+init function
