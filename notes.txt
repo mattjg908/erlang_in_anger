@@ -1,5 +1,6 @@
 P. 12
 
+### Chapter 1 Exercises, P. 10
 1. How do you know if a code base is an application? A release?
 The presence of a relx.config file or a relx tuple in rebar.config.
 
@@ -48,7 +49,7 @@ the README?
 Yes, more processes can be added by adding a String to the list of process names
 in the application file.
 
-P. 18
+### Chapter 2, Section 2.3 Exercises, P. 18
 1. Are Erlang supervision trees started depth-first? breadth-first?
 Synchronously or asynchronously?
 Erlang supervision trees are started synchronously depth-first.
@@ -63,9 +64,42 @@ Erlang supervision trees are started synchronously depth-first.
 
 3. What are the main differences between the directory structure of an app and a
 release?
+An OTP application can be expected to have one top-level supervisor (if any)
+and possibly a bunch of dependencies that sit below it. An OTP release will
+usually be composed of multiple OTP applications, which may or may not depend on
+each other.
+
+Instead of having a top-level app alone in src, applications can be nested one
+level deeper in a apps or lib directory...This structure lends itself to
+generating releases where multiple OTP applications under your control under a
+single code repository.
 
 4. When should you use a release?
+If what you’re writing is a stand-alone piece of code that could be used by
+someone building a product, it’s likely an OTP application. If what you’re
+building is a product that stands on its own and should be deployed by users
+as-is (or with a little configuration), what you should be building is an OTP
+release.
 
 5. Give two examples of the type of state that can go in a process’ init
 function, and two examples of the type of state that shouldn’t go in a process’
-init function
+init function.
+
+Should (stuff you can guarantee):
+- configuration files
+- access to the file system
+
+Should not (stuff you cannot guarantee):
+- non-local database
+- external services
+
+Using the code at https://github.com/ferd/recon_demo:
+1. Extract the main application hosted in the release to make it independent,
+and includable in other projects.
+
+2. Host the application somewhere (Github, Bitbucket, local server), and build a
+release with that application as a dependency.
+
+3. The main application’s workers (council_member) starts a server and connects
+to it in its init/1 function. Can you make this connection happen outside of the
+init function’s? Is there a benefit to doing so in this specific case?
