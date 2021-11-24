@@ -107,13 +107,51 @@ init function’s? Is there a benefit to doing so in this specific case?
 Chapter 3 Exercises, P. 31
 
 1. Name the common sources of overload in Erlang systems
+- In a default Erlang install, the error_logger2 process will take its sweet time to log things... especially true of
+  user-generated log messages... and for crashes in large processes
+- Locking and blocking operations
+- Unexpected messages...Messages you didn’t know about tend to be rather rare when using OTP...However, all kinds of
+  OTP-compliant systems end up having processes that may not implement a behaviour, or processes that go in a
+  non-behaviour stretch where it overtakes message handling
 
-2. What are the two main classes of strategies to handle overload? 3. How can
-   long-running operations be made safer?
+2. What are the two main classes of strategies to handle overload?
+Slowing things down and dropping things.
+
+- Slow down
+  -  Restricting Input...The most common way to restrict data input is to make calls to a process whose queue
+  would grow in uncontrollable ways synchronously.
+  - Asking For Permission...A somewhat simpler approach to back-pressure is to identify the resources we want to block
+  on, those that cannot be made faster and are critical to your business and users. Lock these
+  resources behind a module or procedure where a caller must ask for the right to make a
+  request and use them. 
+
+- Dropping
+  - random drops
+  - stack, queue, and/or time-sensitive buffers
+
+3. How can long-running operations be made safer?
+- Transform blocking tasks into a asynchronous tasks
+- When there is any point of your program that ends up being a central hub for receiving
+messages, lengthy tasks should be moved out of there if possible
+- Handling predictable overload situations by adding more processes — which either handle the blocking operations
+or instead act as a buffer while the "main" process blocks — is often a good idea.
+- Start the long-running job and keep a token that identifies it uniquely, along with the original requester you’re
+doing work for. When the resource is available, have it send a message back to the server with the aforementioned token.
+The server will eventually get the message, match the token to the requester, and answer back, without being blocked by
+other requests in the mean time
 
 4. When going synchronous, how should timeouts be chosen?
+- What’s particularly tricky about applying back-pressure to handle overload via synchronous
+calls is having to determine what the typical operation should be taking in terms of time,
+or rather, at what point the system should time out.
+The best way to express the problem is that the first timer to be started will be at
+the edge of the system, but the critical operations will be happening deep within it. This
+means that the timer at the edge of the system will need to have a longer wait time that
+those within, unless you plan on having operations reported as timing out at the edge even
+though they succeeded internally
 
 5. What is an alternative to having timeouts?
+- inifinite timeouts or asking for permission, discarding data, buffering of various types
 
 6. When would you pick a queue buffer before a stack buffer?
 
