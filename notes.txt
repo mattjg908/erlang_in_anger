@@ -182,3 +182,35 @@ Open-ended Questions
 7. What can you expect to happen to your API design if you forget to deal with
    overload, and suddenly need to add back-pressure or load-shedding to it?
 
+### Chapter 4 Exercises, P. 37
+1. What are the 4 ways to connect to a remote node?
+- Job Control Mode (^ G)
+- Remsh
+- SSH Daemon
+- Named Pipes
+
+2. Can you connect to a node that wasn’t given a name?
+Yes, you can connect to a node that wasn't given a name SSH and named pipes
+
+3. What’s the command to go into the Job Control Mode (JCL)?
+^ G
+
+4. Which method(s) of connecting to a remote shell should you avoid for a system
+that outputs a lot of data to standard output?
+Named pipes, using this method ends up calling fsync for each piece of output,
+which may give quite a performance hit if a lot of IO is taking place over
+standard output
+
+5. What instances of remote connections shouldn’t be disconnected using ˆG?
+SSH may be ok to use ^G, I'm not sure but closing the the terminal is enough to
+exit
+
+^G then `exit` will stop the named pipe from running.
+
+6. What command(s) should never be used to disconnect from a session?
+q() or init:stop(), maybe some others?
+
+7. Can all of the methods mentioned support having multiple users connected onto
+the same Erlang node without issue?
+It seems like the named pipe only accepts connections from one process at a
+time, not sure of the limitations of the other methods.
