@@ -117,7 +117,7 @@ Chapter 3 Exercises, P. 31
 2. What are the two main classes of strategies to handle overload?
 Slowing things down and dropping things.
 
-- Slow down
+- Slow down (back-pressure)
   -  Restricting Input...The most common way to restrict data input is to make calls to a process whose queue
   would grow in uncontrollable ways synchronously.
   - Asking For Permission...A somewhat simpler approach to back-pressure is to identify the resources we want to block
@@ -125,7 +125,7 @@ Slowing things down and dropping things.
   resources behind a module or procedure where a caller must ask for the right to make a
   request and use them. 
 
-- Dropping
+- Dropping (load-shedding)
   - random drops
   - stack, queue, and/or time-sensitive buffers
 
@@ -154,6 +154,10 @@ though they succeeded internally
 - inifinite timeouts or asking for permission, discarding data, buffering of various types
 
 6. When would you pick a queue buffer before a stack buffer?
+- A major downside of stack buffers is that messages are not necessarily going
+  to be processed in the order they were submitted — they’re nicer for
+  independent tasks, but will ruin your day if you expect a sequence of events
+  to be respected.
 
 Open-ended Questions
 1. What is a true bottleneck? How can you find it?
@@ -177,3 +181,4 @@ Open-ended Questions
 
 7. What can you expect to happen to your API design if you forget to deal with
    overload, and suddenly need to add back-pressure or load-shedding to it?
+
